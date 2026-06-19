@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Medicine Expiry Reminder</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; padding-top: 50px; }
+  .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 350px; }
+  h2 { text-align: center; color: #2c3e50; }
+  label { display: block; margin-top: 15px; font-weight: bold; }
+  input { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
+  button { width: 100%; margin-top: 20px; padding: 10px; background: #2c7be5; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+  button:hover { background: #1a5dc2; }
+  #message { margin-top: 15px; text-align: center; font-weight: bold; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h2>💊 Medicine Expiry Reminder</h2>
+    <form id="medicineForm">
+      <label>Medicine Name</label>
+      <input type="text" id="name" required>
+
+      <label>Expiry Date</label>
+      <input type="date" id="expiry_date" required>
+
+      <label>Your Email</label>
+      <input type="email" id="email" required>
+
+      <button type="submit">Add Medicine</button>
+    </form>
+    <div id="message"></div>
+  </div>
+
+<script>
+  const FUNCTION_URL = "https://addmedicine-813991280978.asia-south1.run.app";
+
+  document.getElementById('medicineForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const expiry_date = document.getElementById('expiry_date').value;
+    const email = document.getElementById('email').value;
+    const messageDiv = document.getElementById('message');
+
+    messageDiv.textContent = "Submitting...";
+    messageDiv.style.color = "black";
+
+    try {
+      const response = await fetch(FUNCTION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, expiry_date, email })
+      });
+      const result = await response.text();
+
+      if (response.ok) {
+        messageDiv.textContent = "✅ " + result;
+        messageDiv.style.color = "green";
+        document.getElementById('medicineForm').reset();
+      } else {
+        messageDiv.textContent = "❌ " + result;
+        messageDiv.style.color = "red";
+      }
+    } catch (err) {
+      messageDiv.textContent = "❌ Error: " + err.message;
+      messageDiv.style.color = "red";
+    }
+  });
+</script>
+</body>
+</html>
